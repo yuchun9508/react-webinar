@@ -1,0 +1,59 @@
+.item {
+  background-color: #ffffff;
+  border: 1px solid #d6d6d6;
+  box-shadow: 1px 2px 6px rgba(219, 219, 219, 0.5);
+  border-radius: 4px;
+  padding: 1.25rem;
+  min-height: 18rem;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.item h4 {
+  font-weight: 600;
+  color: #01254f;
+  font-size: 1rem;
+  margin-bottom: 0.75rem;
+}
+
+.content {
+  font-size: 0.875rem;
+  margin-bottom: 0.75rem;
+}
+
+.date {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #01254f;
+  margin-bottom: 1.25rem;
+}
+
+.time {
+  font-size: 0.875rem;
+  margin-bottom: 0.75rem;
+}
+
+.actions {
+  margin-top: auto;
+  display: flex;
+  justify-content: space-between;
+}
+
+.actions button {
+  font-weight: 600;
+  color: #6bb718;
+  background-color: transparent;
+  border: none;
+  padding: 0;
+  margin: 0;
+  cursor: pointer;
+}
+
+.actions a {
+  display: block;
+  width: 1.375rem;
+  height: 1.375rem;
+  background: url('/src/assets/icon_arrow-right.svg') center no-repeat;
+  background-size: 100% auto;
+}

@@ -1,0 +1,54 @@
+.introduction {
+  padding: 5rem 0;
+}
+
+.introduction h1 {
+  font-size: 1.75rem;
+  margin-bottom: 1.25rem;
+  color: #01254f;
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+}
+
+.content__text {
+  padding-bottom: 3rem;
+  flex: 1 1 50%;
+}
+
+.content__video {
+  flex: 1 1 50%;
+}
+
+.iframeContainer {
+  width: 100%;
+  padding-bottom: 58%;
+  position: relative;
+  overflow: hidden;
+}
+
+.iframeContainer iframe {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+}
+
+@media screen and (min-width: 1200px) {
+  .introduction {
+    padding: 10rem 0;
+  }
+
+  .content {
+    flex-direction: row;
+  }
+
+  .content__text {
+    padding-right: 7.5rem;
+  }
+}

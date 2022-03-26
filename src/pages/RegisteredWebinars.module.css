@@ -1,0 +1,26 @@
+.webinars {
+  padding: 5rem 0;
+}
+
+.webinars ul {
+  list-style: none;
+  padding: 0;
+  margin: -0.625rem;
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.webinars ul li {
+  flex: 1 1 100%;
+  padding: 0.625rem;
+}
+
+.loading {
+  text-align: center;
+}
+
+@media screen and (min-width: 1200px) {
+  .webinars ul li {
+    flex: 1 1 33%;
+  }
+}

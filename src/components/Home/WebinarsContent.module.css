@@ -1,0 +1,57 @@
+.introduction {
+  padding: 5rem 0;
+  text-align: center;
+}
+
+.introduction h1 {
+  font-size: 1.75rem;
+  margin-bottom: 1.25rem;
+  color: #01254f;
+}
+
+.webinars {
+  background-color: #f2f2f2;
+  padding: 5rem 0;
+}
+
+.webinars ul {
+  list-style: none;
+  padding: 0;
+  margin: -0.625rem;
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.webinars ul li {
+  flex: 1 1 100%;
+  padding: 0.625rem;
+}
+
+.loading {
+  text-align: center;
+  margin: 2rem 0;
+}
+
+.actions {
+  text-align: center;
+  margin-top: 3rem;
+}
+
+.actions button {
+  cursor: pointer;
+  font: inherit;
+  background-color: #01254f;
+  border-radius: 4px;
+  color: #ffffff;
+  padding: 0.5rem 2.5rem;
+}
+
+@media screen and (min-width: 1200px) {
+  .introduction p {
+    width: 75%;
+    margin: auto;
+  }
+  .webinars ul li {
+    flex: 1 1 33%;
+  }
+}
