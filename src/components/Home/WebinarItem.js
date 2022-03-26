@@ -1,6 +1,8 @@
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { useHistory, Link } from 'react-router-dom';
 
+import useHttp from '../../hooks/use-http';
+import { webinarActions } from '../../store/webinar';
 import classes from './WebinarItem.module.css';
 
 const dateFormatter = (timestamp) => {
@@ -28,11 +30,17 @@ const expireDateCalculator = (timestamp) => {
 };
 
 const WebinarItem = (props) => {
+  const dispatch = useDispatch();
   const history = useHistory();
+  const token = useSelector((state) => state.auth.token);
   const isAuth = useSelector((state) => state.auth.isLoggedIn);
-  const { id, title, created_at, content } = props.item;
+  const { id, title, created_at, content, favourited } = props.item;
   const createdAt = dateFormatter(created_at);
   const expireAt = expireDateCalculator(created_at);
+
+  const { sendRequest } = useHttp((data) => {
+    dispatch(webinarActions.removeItems(id));
+  });
 
   const createMarkup = () => {
     return { __html: content };
@@ -47,6 +55,15 @@ const WebinarItem = (props) => {
     }
   };
 
+  const unregisterHandler = () => {
+    sendRequest(`/favourites/post/${id}`, {
+      method: 'DELETE',
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+  };
+
   return (
     <div className={classes.item}>
       <div className={classes.date}>{createdAt}</div>
@@ -57,7 +74,9 @@ const WebinarItem = (props) => {
       ></div>
       <div className={classes.time}>{expireAt}</div>
       <div className={classes.actions}>
-        <button onClick={registerHandler}>Register Now</button>
+        <button onClick={favourited ? unregisterHandler : registerHandler}>
+          {favourited ? 'Unrigister' : 'Register Now'}
+        </button>
         <Link to={`/webinar/${id}`}></Link>
       </div>
     </div>

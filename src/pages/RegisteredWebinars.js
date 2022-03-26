@@ -56,17 +56,10 @@ const RegisteredWebinars = (props) => {
       <section className={classes.webinars}>
         <div className="container">
           <ul>
-            {webinarItems.map((item) => {
+            {webinarItems.map((webinar) => {
               return (
-                <li key={item.id}>
-                  <WebinarItem
-                    item={{
-                      id: item.id,
-                      created_at: item.created_at,
-                      title: item.title,
-                      content: item.content,
-                    }}
-                  />
+                <li key={webinar.id}>
+                  <WebinarItem item={webinar} />
                 </li>
               );
             })}

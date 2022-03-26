@@ -22,6 +22,7 @@ const webinarSlice = createSlice({
           created_at: item.created_at,
           title: item.title,
           content: item.content,
+          favourited: item.favourited,
         };
       });
     },
@@ -34,8 +35,12 @@ const webinarSlice = createSlice({
           created_at: item.created_at,
           title: item.title,
           content: item.content,
+          favourited: item.favourited,
         });
       }
+    },
+    removeItems(state, action) {
+      state.items = state.items.filter((item) => item.id !== action.payload);
     },
     reset(state) {
       state.items = [];
