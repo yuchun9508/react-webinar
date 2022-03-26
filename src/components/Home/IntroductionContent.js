@@ -31,7 +31,7 @@ const IntroductionContent = () => {
           <div className={classes.iframeContainer}>
             <iframe
               title="Meet Your Host - Alistair Schultz"
-              src="http://www.youtube.com/embed/M7lc1UVf-VE?enablejsapi=1&origin=http://example.com"
+              src="https://www.youtube.com/embed/M7lc1UVf-VE?enablejsapi=1&origin=https://example.com"
             ></iframe>
           </div>
         </div>
