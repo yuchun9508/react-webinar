@@ -36,6 +36,6 @@
 
 @media screen and (min-width: 1200px) {
   .webinars ul li {
-    flex: 1 1 33%;
+    flex: 0 0 33%;
   }
 }
