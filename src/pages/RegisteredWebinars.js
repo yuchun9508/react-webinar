@@ -1,67 +1,81 @@
-import { Fragment, useEffect, useCallback, useState } from 'react';
-import { useSelector } from 'react-redux';
+import { Fragment, useEffect, useCallback } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 
 import WebinarItem from '../components/Home/WebinarItem';
+import useHttp from '../hooks/use-http';
+import { webinarActions } from '../store/webinar';
 import classes from './RegisteredWebinars.module.css';
 
 const RegisteredWebinars = (props) => {
+  const token = useSelector((state) => state.auth.token);
   const user = useSelector((state) => state.auth.user);
+  const webinarItems = useSelector((state) => state.webinar.items);
+  const currentPage = useSelector((state) => state.webinar.currentPage);
+  const totalPages = useSelector((state) => state.webinar.totalPages);
+  const dispatch = useDispatch();
+
   const { id } = user;
 
-  const [webinarItems, setWebinarItems] = useState([]);
-  const [isLoading, setIsLoading] = useState(false);
-
-  const fetchData = useCallback(async () => {
-    setIsLoading(true);
-
-    try {
-      const response = await fetch(
-        `https://api.finlogix.com/v1/posts?favourited=1&author=${id}&per_page=6&page=1`
-      );
-
-      const responseData = await response.json();
-
-      setIsLoading(false);
-
-      if (!response.ok) {
-        let errorMessage = 'Fetch data failed!';
-        if (responseData && responseData.error && responseData.error.message) {
-          errorMessage = responseData.error.message;
+  const { isLoading, sendRequest } = useHttp(
+    useCallback(
+      (data) => {
+        if (currentPage > 1) {
+          dispatch(webinarActions.addItems(data.data));
+        } else if (currentPage === 1) {
+          dispatch(webinarActions.setItems(data.data));
         }
-        throw new Error(errorMessage);
-      }
-      setWebinarItems(responseData.data);
-    } catch (error) {
-      alert(error);
-    }
-  }, [id]);
+        dispatch(
+          webinarActions.setTotalPages(data.meta.pagination.total_pages)
+        );
+      },
+      [currentPage, dispatch]
+    )
+  );
 
   useEffect(() => {
-    fetchData();
-  }, [fetchData]);
+    dispatch(webinarActions.reset());
+  }, [dispatch]);
+
+  useEffect(() => {
+    sendRequest(
+      `/posts?favourited=1&author=${id}&per_page=6&page=${currentPage}`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+  }, [currentPage, id, token, sendRequest]);
+
+  const loadMoreHandler = () => {
+    dispatch(webinarActions.incrementCurrentPage());
+  };
 
   return (
     <Fragment>
       <section className={classes.webinars}>
         <div className="container">
+          <ul>
+            {webinarItems.map((item) => {
+              return (
+                <li key={item.id}>
+                  <WebinarItem
+                    item={{
+                      id: item.id,
+                      created_at: item.created_at,
+                      title: item.title,
+                      content: item.content,
+                    }}
+                  />
+                </li>
+              );
+            })}
+          </ul>
           {isLoading && <p className={classes.loading}>Loading...</p>}
-          {!isLoading && (
-            <ul>
-              {webinarItems.map((item) => {
-                return (
-                  <li key={item.id}>
-                    <WebinarItem
-                      item={{
-                        id: item.id,
-                        created_at: item.created_at,
-                        title: item.title,
-                        content: item.content,
-                      }}
-                    />
-                  </li>
-                );
-              })}
-            </ul>
+          {currentPage < totalPages && (
+            <div className={classes.actions}>
+              <button onClick={loadMoreHandler}>Load more</button>
+            </div>
           )}
         </div>
       </section>

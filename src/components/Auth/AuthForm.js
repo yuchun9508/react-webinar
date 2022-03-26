@@ -1,10 +1,11 @@
-import { useState, useRef } from 'react';
+import { useRef } from 'react';
 import { useHistory } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 
 import { authActions } from '../../store/auth';
 import classes from './AuthForm.module.css';
 import Card from '../UI/Card';
+import useHttp from '../../hooks/use-http';
 
 const AuthForm = () => {
   const dispatch = useDispatch();
@@ -12,7 +13,20 @@ const AuthForm = () => {
   const emailInputRef = useRef();
   const passwordInputRef = useRef();
 
-  const [isLoading, setIsLoading] = useState(false);
+  const { isLoading, sendRequest } = useHttp((data) => {
+    dispatch(
+      authActions.login({
+        token: data.token,
+        user: {
+          id: data.user.id,
+          firstName: data.user.first_name,
+          lastName: data.user.last_name,
+          email: data.user.email,
+        },
+      })
+    );
+    history.replace('/');
+  });
 
   const submitHandler = async (event) => {
     event.preventDefault();
@@ -22,50 +36,16 @@ const AuthForm = () => {
 
     // omit validation
 
-    setIsLoading(true);
-
-    try {
-      const response = await fetch(
-        'https://api.finlogix.com/v1/auth/email/login',
-        {
-          method: 'POST',
-          body: JSON.stringify({
-            email: enteredEmail,
-            password: enteredPassword,
-          }),
-          headers: {
-            'Content-Type': 'application/json',
-          },
-        }
-      );
-
-      const responseData = await response.json();
-
-      setIsLoading(false);
-
-      if (!response.ok) {
-        let errorMessage = 'Login failed!';
-        if (responseData && responseData.error && responseData.error.message) {
-          errorMessage = responseData.error.message;
-        }
-        throw new Error(errorMessage);
-      }
-
-      dispatch(
-        authActions.login({
-          token: responseData.token,
-          user: {
-            id: responseData.user.id,
-            firstName: responseData.user.first_name,
-            lastName: responseData.user.last_name,
-            email: responseData.user.email,
-          },
-        })
-      );
-      history.replace('/');
-    } catch (error) {
-      alert(error);
-    }
+    sendRequest('/auth/email/login', {
+      method: 'POST',
+      body: JSON.stringify({
+        email: enteredEmail,
+        password: enteredPassword,
+      }),
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
   };
 
   return (

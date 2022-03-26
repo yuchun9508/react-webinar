@@ -1,10 +1,12 @@
-import { Fragment, useEffect, useCallback, useState } from 'react';
+import { Fragment, useEffect, useCallback } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 
 import classes from './WebinarsContent.module.css';
 import { webinarActions } from '../../store/webinar';
+import useHttp from '../../hooks/use-http';
 
 const WebinarsContent = (props) => {
+  const token = useSelector((state) => state.auth.token);
   const isAuth = useSelector((state) => state.auth.isLoggedIn);
   const user = useSelector((state) => state.auth.user);
   const webinarItems = useSelector((state) => state.webinar.items);
@@ -12,47 +14,38 @@ const WebinarsContent = (props) => {
   const totalPages = useSelector((state) => state.webinar.totalPages);
   const dispatch = useDispatch();
 
-  const [isLoading, setIsLoading] = useState(false);
+  const { isLoading, sendRequest } = useHttp(
+    useCallback(
+      (data) => {
+        if (currentPage > 1) {
+          dispatch(webinarActions.addItems(data.data));
+        } else if (currentPage === 1) {
+          dispatch(webinarActions.setItems(data.data));
+        }
+        dispatch(
+          webinarActions.setTotalPages(data.meta.pagination.total_pages)
+        );
+      },
+      [currentPage, dispatch]
+    )
+  );
 
-  let url = 'https://api.finlogix.com/v1/posts?';
+  let url = '/posts?';
   if (isAuth) {
     url += `favourited=0&author=${user.id}&`;
   }
 
-  const fetchData = useCallback(async () => {
-    setIsLoading(true);
-
-    try {
-      const response = await fetch(url + `per_page=6&page=${currentPage}`);
-
-      const responseData = await response.json();
-
-      setIsLoading(false);
-
-      if (!response.ok) {
-        let errorMessage = 'Fetch data failed!';
-        if (responseData && responseData.error && responseData.error.message) {
-          errorMessage = responseData.error.message;
-        }
-        throw new Error(errorMessage);
-      }
-      // console.log(responseData);
-      if (currentPage > 1) {
-        dispatch(webinarActions.addItems(responseData.data));
-      } else if (currentPage === 1) {
-        dispatch(webinarActions.setItems(responseData.data));
-      }
-      dispatch(
-        webinarActions.setTotalPages(responseData.meta.pagination.total_pages)
-      );
-    } catch (error) {
-      alert(error);
-    }
-  }, [url, currentPage, dispatch]);
+  useEffect(() => {
+    dispatch(webinarActions.reset());
+  }, [dispatch]);
 
   useEffect(() => {
-    fetchData();
-  }, [fetchData]);
+    sendRequest(url + `per_page=6&page=${currentPage}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+  }, [currentPage, token, url, sendRequest]);
 
   const loadMoreHandler = () => {
     dispatch(webinarActions.incrementCurrentPage());

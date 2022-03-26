@@ -4,6 +4,7 @@ import { useHistory } from 'react-router-dom';
 
 import classes from './RegisterForm.module.css';
 import Card from '../UI/Card';
+import useHttp from '../../hooks/use-http';
 
 const RegisterForm = (props) => {
   const history = useHistory();
@@ -18,10 +19,6 @@ const RegisterForm = (props) => {
   const [lastNameInput, setLastNameInput] = useState(lastName || '');
   const [emailInput, setEmailInput] = useState(email || '');
 
-  useEffect(() => {
-    setTopicSelect(defaultWebinar.id);
-  }, [defaultWebinar]);
-
   const topicSelectIsInvalid = !topicSelect;
   const firstNameInputIsInvalid = !firstNameInput;
   const lastNameInputIsInvalid = !lastNameInput;
@@ -32,7 +29,13 @@ const RegisterForm = (props) => {
     lastNameInputIsInvalid ||
     emailInputIsInvalid;
 
-  const [isLoading, setIsLoading] = useState(false);
+  useEffect(() => {
+    setTopicSelect(defaultWebinar.id);
+  }, [defaultWebinar]);
+
+  const { isLoading, sendRequest } = useHttp((data) => {
+    history.push('/registered');
+  });
 
   const changeHandler = (key, event) => {
     const value = event.target.value;
@@ -62,37 +65,17 @@ const RegisterForm = (props) => {
       return;
     }
 
-    setIsLoading(true);
-
-    try {
-      const response = await fetch('https://api.finlogix.com/v1/favourites', {
-        method: 'POST',
-        body: JSON.stringify({
-          ids: [topicSelect],
-          model: 'post',
-        }),
-        headers: {
-          Authorization: `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
-      });
-
-      const responseData = await response.json();
-
-      setIsLoading(false);
-
-      if (!response.ok) {
-        let errorMessage = 'Register failed!';
-        if (responseData && responseData.error && responseData.error.message) {
-          errorMessage = responseData.error.message;
-        }
-        throw new Error(errorMessage);
-      }
-
-      history.push('/registered');
-    } catch (error) {
-      alert(error);
-    }
+    sendRequest('/favourites', {
+      method: 'POST',
+      body: JSON.stringify({
+        ids: [topicSelect],
+        model: 'post',
+      }),
+      headers: {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+    });
   };
 
   return (

@@ -17,6 +17,21 @@
 
 .loading {
   text-align: center;
+  margin: 2rem 0;
+}
+
+.actions {
+  text-align: center;
+  margin-top: 3rem;
+}
+
+.actions button {
+  cursor: pointer;
+  font: inherit;
+  background-color: #01254f;
+  border-radius: 4px;
+  color: #ffffff;
+  padding: 0.5rem 2.5rem;
 }
 
 @media screen and (min-width: 1200px) {

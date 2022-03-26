@@ -37,6 +37,11 @@ const webinarSlice = createSlice({
         });
       }
     },
+    reset(state) {
+      state.items = [];
+      state.currentPage = 1;
+      state.totalPages = null;
+    },
   },
 });
 

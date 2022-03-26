@@ -1,6 +1,7 @@
 import { useSelector, useDispatch } from 'react-redux';
 import { Link } from 'react-router-dom';
 
+import useHttp from '../../hooks/use-http';
 import { authActions } from '../../store/auth';
 import classes from './MainNavigation.module.css';
 
@@ -9,29 +10,17 @@ const MainNavigation = () => {
   const isAuth = useSelector((state) => state.auth.isLoggedIn);
   const dispatch = useDispatch();
 
-  const logoutHandler = async () => {
-    try {
-      const response = await fetch('https://api.finlogix.com/v1/auth/logout', {
-        method: 'POST',
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+  const { sendRequest } = useHttp((data) => {
+    dispatch(authActions.logout());
+  });
 
-      const responseData = await response.json();
-
-      if (!response.ok) {
-        let errorMessage = 'Logout failed!';
-        if (responseData && responseData.error && responseData.error.message) {
-          errorMessage = responseData.error.message;
-        }
-        throw new Error(errorMessage);
-      }
-
-      dispatch(authActions.logout());
-    } catch (error) {
-      alert(error);
-    }
+  const logoutHandler = () => {
+    sendRequest('/auth/logout', {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
   };
 
   return (
